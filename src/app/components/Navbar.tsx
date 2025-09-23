@@ -56,26 +56,11 @@ export default function Navbar() {
 
   return (
     <>
-      {/* macOS Menu Bar */}
-      <div className="menu-bar">
-        <div className="menu-item hidden md:inline-block">Finder</div>
-        <div className="menu-item hidden md:inline-block">File</div>
-        <div className="menu-item hidden md:inline-block">Edit</div>
-        <div className="menu-item hidden md:inline-block">View</div>
-        <div className="menu-item hidden md:inline-block">Go</div>
-        <div className="menu-item hidden md:inline-block">Window</div>
-        <div className="menu-item hidden md:inline-block">Help</div>
-        <div className="menu-right">
-          <i className="fas fa-wifi menu-icon" />
-          <i className="fas fa-battery-full menu-icon" />
-          <span>{time}</span>
-        </div>
-      </div>
-
+   
       {/* Top Nav */}
-      <nav className="fixed w-full py-4 px-6 z-50 backdrop-blur-lg bg-opacity-20" style={{ top: 28 }}>
+      <nav className="fixed w-full py-4 px-6 z-50 backdrop-blur-lg bg-opacity-20" style={{ top: 0 }}>
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-xl font-semibold">John Doe</Link>
+          <Link href="/" className="text-xl font-semibold">Tanvi Paradkar</Link>
 
           <div className="hidden md:flex space-x-6">
             <Link href="/about" className="hover:text-[var(--accent)] transition">About me</Link>

@@ -43,7 +43,7 @@ export default function ProjectCard({ title, desc, gradient, tags, href }: Proje
   }, []);
 
   return (
-    <article ref={cardRef} className="mac-card mac-window rounded-xl overflow-hidden card-3d will-change-transform">
+    <article ref={cardRef} className="mac-card mac-window rounded-xl overflow-hidden card-3d will-change-transform"  style={{ padding: '10px' }}>
       <div className="mac-window-controls">
         <div className="mac-control mac-close"></div>
         <div className="mac-control mac-minimize"></div>

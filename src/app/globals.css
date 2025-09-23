@@ -1,4 +1,35 @@
 @import "tailwindcss";
+html, body {
+  cursor: none !important;
+}
+@keyframes coffeeSteam1 {
+  0%   { transform: translateY(6px) translateX(0) scale(0.95); opacity: 0; }
+  20%  { opacity: 0.7; }
+  100% { transform: translateY(-18px) translateX(-3px) scale(1.05); opacity: 0; }
+}
+@keyframes coffeeSteam2 {
+  0%   { transform: translateY(8px) translateX(0) scale(0.92); opacity: 0; }
+  25%  { opacity: 0.75; }
+  100% { transform: translateY(-22px) translateX(2px) scale(1.06); opacity: 0; }
+}
+@keyframes coffeeSteam3 {
+  0%   { transform: translateY(7px) translateX(0) scale(0.94); opacity: 0; }
+  30%  { opacity: 0.75; }
+  100% { transform: translateY(-24px) translateX(-1px) scale(1.08); opacity: 0; }
+}
+
+.coffee-steam-1 { animation: coffeeSteam1 2.2s ease-in-out infinite; }
+.coffee-steam-2 { animation: coffeeSteam2 2.6s ease-in-out infinite; }
+.coffee-steam-3 { animation: coffeeSteam3 3.0s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .coffee-steam-1,
+  .coffee-steam-2,
+  .coffee-steam-3 {
+    animation: none !important;
+    opacity: 0.6;
+  }
+}
 
 /* ---------- Custom CSS from your HTML ---------- */
 :root {
@@ -11,6 +42,8 @@
   --border-color: rgba(255, 255, 255, 0.1);
   --dock-bg: rgba(255, 255, 255, 0.1);
 }
+
+
 /* Base dot */
 .theme-selector {
   width: 16px;
@@ -145,6 +178,7 @@ body {
 
 /* Cards / buttons */
 .mac-card {
+
   background-color: var(--card-bg);
   backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
