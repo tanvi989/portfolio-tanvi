@@ -5,8 +5,12 @@ import ProjectsSection from "./components/ProjectsSection";
 import SkillsCarousel from "./components/SkillsCarousel";
 import NotesSection from "./components/NotesSection";
 const TOP_SKILLS = [
+   { name: "Machine Learning", icon: "fas fa-brain", color: "text-rose-400" }, // New
+  { name: "Blockchain", icon: "fab fa-ethereum", color: "text-indigo-400" }, // N
+    { name: "Next.js", icon: "fab fa-react", color: "text-slate-300" },
   { name: "React", icon: "fab fa-react", color: "text-blue-400" },
   { name: "JavaScript", icon: "fab fa-js", color: "text-yellow-400" },
+  
   { name: "TypeScript", icon: "fab fa-js", color: "text-blue-500" },
   { name: "AWS", icon: "fab fa-aws", color: "text-orange-400" },
   { name: "Node.js", icon: "fab fa-node", color: "text-green-500" },

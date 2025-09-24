@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
-type Skill = { name: string; icon: string; color?: string };
+type Skill = { 
+  name: string; 
+  icon: string; 
+  color?: string; 
+  href?: string; // <-- added for redirection
+};
 
 export default function SkillsCarousel({
   title,
@@ -15,6 +21,8 @@ export default function SkillsCarousel({
   perPage?: number;
   autoPlayMs?: number;
 }) {
+  const router = useRouter();
+
   const pages = useMemo(() => {
     const chunks: Skill[][] = [];
     for (let i = 0; i < skills.length; i += perPage) {
@@ -37,10 +45,36 @@ export default function SkillsCarousel({
     setPage(pageIndex);
   }, []);
 
-  // autoplay (pause on hover)
+  // Redirect helper
+  const slugify = (s: string) =>
+    s
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
+
+  const isExternal = (url: string) => /^https?:\/\//i.test(url);
+
+  const handleRedirect = useCallback(
+    (skill: Skill) => {
+      const target = skill.href || `/skills/${slugify(skill.name)}`;
+
+      if (isExternal(target)) {
+        // external: open in new tab
+        window.open(target, "_blank", "noopener,noreferrer");
+      } else {
+        // internal: use Next.js navigation
+        router.push(target);
+      }
+    },
+    [router]
+  );
+
+  // autoplay (pause on hover) - (keeps existing behavior)
   useEffect(() => {
     if (autoPlayMs <= 0 || pages.length <= 1) return;
-    
+
     const timer = window.setInterval(nextPage, autoPlayMs);
     return () => window.clearInterval(timer);
   }, [pages.length, autoPlayMs, nextPage]);
@@ -114,7 +148,7 @@ export default function SkillsCarousel({
     <section className="w-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg md:text-xl font-semibold">{title}</h3>
- 
+
         <div className="flex items-center space-x-2">
           <button
             type="button"
@@ -146,13 +180,16 @@ export default function SkillsCarousel({
               <div key={i} className="inline-block align-top w-full">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
                   {chunk.map((skill, idx) => (
-                    <div
+                    <button
                       key={`${skill.name}-${idx}`}
-                      className="tech-icon mac-card p-4 md:p-6 rounded-xl flex flex-col items-center justify-center transition-transform hover:scale-105"
+                      type="button"
+                      aria-label={`Open ${skill.name}`}
+                      onClick={() => handleRedirect(skill)}
+                      className="tech-icon mac-card p-4 md:p-6 rounded-xl flex flex-col items-center justify-center transition-transform hover:scale-105 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                     >
                       <i className={`${skill.icon} text-3xl md:text-4xl mb-2 ${skill.color ?? ""}`}></i>
                       <span className="text-sm md:text-base text-center">{skill.name}</span>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>

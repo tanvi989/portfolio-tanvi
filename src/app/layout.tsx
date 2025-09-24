@@ -1,6 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Dock from "./components/Dock";
@@ -10,7 +10,16 @@ import ChatbotWidget from "./components/ChatbotWidget";
 import Constellation from "./components/Constellation";
 import DigitalCursor from "./components/DigitalCursor";
 
-const inter = Inter({ subsets: ["latin"] });
+// app/layout.tsx or wherever you're importing fonts
+import { Inter } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  // 👇 Uncomment this to fall back to system fonts if Inter fails
+  fallback: ['system-ui', 'sans-serif'],
+});
 
 export const metadata: Metadata = {
   // ← IMPORTANT: set your real production domain
@@ -46,7 +55,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Tanvi Paradkar",
-    url: "https://www.tanviparadkar.com",
+    url: "https://www.tanviparadkar.in",
     title: "Global Software Services",
     description:
       "Full-stack apps, APIs, cloud, and growth-ready websites for international clients.",

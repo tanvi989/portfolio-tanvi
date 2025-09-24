@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import SkillsCarousel from "../components/SkillsCarousel";
 
@@ -56,6 +57,17 @@ const CATEGORIES: Array<Skill["category"] | "All"> = [
   "Data & Tools",
   "Testing",
 ];
+
+// Small helper to create clean URLs like "react-native", "node-js", etc.
+const slugify = (s: string) =>
+  encodeURIComponent(
+    s
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/\+/g, "plus")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+  );
 
 export default function SkillsPage() {
   const [activeCat, setActiveCat] = useState<typeof CATEGORIES[number]>("All");
@@ -140,22 +152,27 @@ export default function SkillsPage() {
             <div className="text-[var(--text-secondary)]">No skills match your filter.</div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-              {filtered.map((s, i) => (
-                <div
-                  key={`${s.name}-${i}`}
-                  className="tech-icon mac-card p-4 md:p-6 rounded-xl flex flex-col items-center justify-center text-center"
-                >
-                  <i className={`${s.icon} text-3xl md:text-4xl mb-2 ${s.color ?? ""}`} />
-                  <span className="font-medium">{s.name}</span>
-                  <div className="mt-2 text-xs text-[var(--text-secondary)]">{s.category}</div>
-                  {s.level && (
-                    <span className="mt-3 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-[var(--border)]">
-                      <i className="fas fa-star" />
-                      {s.level}
-                    </span>
-                  )}
-                </div>
-              ))}
+              {filtered.map((s, i) => {
+                const href = `/skills/${slugify(s.name)}`; // redirect target
+                return (
+                  <Link
+                    key={`${s.name}-${i}`}
+                    href={href}
+                    className="tech-icon mac-card p-4 md:p-6 rounded-xl flex flex-col items-center justify-center text-center hover:shadow-lg hover:-translate-y-0.5 transition"
+                    aria-label={`View details for ${s.name}`}
+                  >
+                    <i className={`${s.icon} text-3xl md:text-4xl mb-2 ${s.color ?? ""}`} />
+                    <span className="font-medium">{s.name}</span>
+                    <div className="mt-2 text-xs text-[var(--text-secondary)]">{s.category}</div>
+                    {s.level && (
+                      <span className="mt-3 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-[var(--border)]">
+                        <i className="fas fa-star" />
+                        {s.level}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </section>
