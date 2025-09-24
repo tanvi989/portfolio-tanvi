@@ -1,11 +1,31 @@
 import { NextResponse } from "next/server";
 
+// Define the interface for the request body
+interface ContactFormData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  botField?: string; // honeypot field
+}
+
+// Define the interface for Resend API response
+interface ResendEmailData {
+  from: string;
+  to: string[];
+  subject: string;
+  reply_to: string;
+  text: string;
+}
+
 export async function POST(req: Request) {
   try {
-    const { name, email, subject, message, botField } = await req.json();
+    const { name, email, subject, message, botField }: ContactFormData = await req.json();
 
-    if (botField) return NextResponse.json({ ok: true }, { status: 200 }); // honeypot
+    // Honeypot check - if bot field is filled, it's likely spam
+    if (botField) return NextResponse.json({ ok: true }, { status: 200 });
 
+    // Validate required fields
     if (!name || !email || !subject || !message) {
       return NextResponse.json({ error: "Missing fields." }, { status: 400 });
     }
@@ -23,19 +43,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
+    const emailData: ResendEmailData = {
+      from: "Portfolio <no-reply@your-domain.com>",
+      to: ["you@example.com"],
+      subject: `[Portfolio] ${subject}`,
+      reply_to: email,
+      text: `From: ${name} <${email}>\n\n${message}`,
+    };
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        from: "Portfolio <no-reply@your-domain.com>",
-        to: ["you@example.com"],
-        subject: `[Portfolio] ${subject}`,
-        reply_to: email,
-        text: `From: ${name} <${email}>\n\n${message}`,
-      }),
+      body: JSON.stringify(emailData),
     });
 
     if (!res.ok) {
@@ -44,7 +66,10 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || "Unexpected error." }, { status: 500 });
+  } catch (error: unknown) {
+    // Properly handle the error without using 'any'
+    const errorMessage = error instanceof Error ? error.message : "Unexpected error.";
+    console.error("Contact form error:", error);
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

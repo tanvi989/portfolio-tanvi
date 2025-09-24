@@ -1,5 +1,5 @@
 "use client";
-
+import Image from 'next/image'
 export default function AboutPage() {
   return (
     <main className="pt-24 pb-16 px-6">
@@ -42,11 +42,14 @@ export default function AboutPage() {
               <div className="mac-card rounded-2xl p-6 flex flex-col items-center">
                 <div className="w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden ring-2 ring-[var(--accent)]/40 mb-4">
                   {/* replace with your image */}
-                  <img
-                    src="/tanvi.jpg"
-                    alt="Tanvi Paradkar portrait"
-                    className="w-full h-full object-cover"
-                  />
+         <Image
+  src="/tanvi.jpg"
+  alt="Tanvi Paradkar portrait"
+  width={144}
+  height={144}
+  className="w-full h-full object-cover"
+/>
+
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-center w-full">
                   <div className="rounded-lg border border-[var(--border)] p-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 
 type Skill = { name: string; icon: string; color?: string };
 
@@ -25,67 +25,88 @@ export default function SkillsCarousel({
 
   const [page, setPage] = useState(0);
 
+  const nextPage = useCallback(() => {
+    setPage((p) => (p + 1) % pages.length);
+  }, [pages.length]);
+
+  const prevPage = useCallback(() => {
+    setPage((p) => (p - 1 + pages.length) % pages.length);
+  }, [pages.length]);
+
+  const goToPage = useCallback((pageIndex: number) => {
+    setPage(pageIndex);
+  }, []);
+
   // autoplay (pause on hover)
   useEffect(() => {
-    let timer: any;
-    const start = () => {
-      if (autoPlayMs <= 0 || pages.length <= 1) return;
-      timer = setInterval(() => setPage((p) => (p + 1) % pages.length), autoPlayMs);
-    };
-    start();
-    return () => clearInterval(timer);
-  }, [pages.length, autoPlayMs]);
+    if (autoPlayMs <= 0 || pages.length <= 1) return;
+    
+    const timer = window.setInterval(nextPage, autoPlayMs);
+    return () => window.clearInterval(timer);
+  }, [pages.length, autoPlayMs, nextPage]);
 
   // keyboard arrows
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") setPage((p) => (p + 1) % pages.length);
-      if (e.key === "ArrowLeft") setPage((p) => (p - 1 + pages.length) % pages.length);
+      if (e.key === "ArrowRight") nextPage();
+      if (e.key === "ArrowLeft") prevPage();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [pages.length]);
+  }, [nextPage, prevPage]);
 
   // simple swipe
   useEffect(() => {
     let startX = 0;
     let isDown = false;
-    const area = document.getElementById(`skills-${title.replace(/\s+/g, "-")}`);
+    const areaId = `skills-${title.replace(/\s+/g, "-")}`;
+    const area = document.getElementById(areaId);
     if (!area) return;
 
-    const down = (e: TouchEvent | MouseEvent) => {
+    const handleStart = (e: TouchEvent | MouseEvent) => {
       isDown = true;
       startX = "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
     };
-    const move = (e: TouchEvent | MouseEvent) => {
+
+    const handleMove = (e: TouchEvent | MouseEvent) => {
       if (!isDown) return;
       const x = "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
       const dx = x - startX;
       if (Math.abs(dx) > 60) {
-        setPage((p) => (dx < 0 ? (p + 1) % pages.length : (p - 1 + pages.length) % pages.length));
+        if (dx < 0) {
+          nextPage();
+        } else {
+          prevPage();
+        }
         isDown = false;
       }
     };
-    const up = () => (isDown = false);
 
-    area.addEventListener("mousedown", down);
-    area.addEventListener("mousemove", move);
-    area.addEventListener("mouseup", up);
-    area.addEventListener("mouseleave", up);
-    area.addEventListener("touchstart", down, { passive: true });
-    area.addEventListener("touchmove", move, { passive: true });
-    area.addEventListener("touchend", up);
+    const handleEnd = () => {
+      isDown = false;
+    };
+
+    // Mouse events
+    area.addEventListener("mousedown", handleStart as EventListener);
+    area.addEventListener("mousemove", handleMove as EventListener);
+    area.addEventListener("mouseup", handleEnd);
+    area.addEventListener("mouseleave", handleEnd);
+
+    // Touch events
+    area.addEventListener("touchstart", handleStart as EventListener, { passive: true });
+    area.addEventListener("touchmove", handleMove as EventListener, { passive: true });
+    area.addEventListener("touchend", handleEnd);
 
     return () => {
-      area.removeEventListener("mousedown", down);
-      area.removeEventListener("mousemove", move);
-      area.removeEventListener("mouseup", up);
-      area.removeEventListener("mouseleave", up);
-      area.removeEventListener("touchstart", down);
-      area.removeEventListener("touchmove", move);
-      area.removeEventListener("touchend", up);
+      area.removeEventListener("mousedown", handleStart as EventListener);
+      area.removeEventListener("mousemove", handleMove as EventListener);
+      area.removeEventListener("mouseup", handleEnd);
+      area.removeEventListener("mouseleave", handleEnd);
+      area.removeEventListener("touchstart", handleStart as EventListener);
+      area.removeEventListener("touchmove", handleMove as EventListener);
+      area.removeEventListener("touchend", handleEnd);
     };
-  }, [title, pages.length]);
+  }, [title, nextPage, prevPage]);
 
   if (!skills.length) return null;
 
@@ -96,16 +117,18 @@ export default function SkillsCarousel({
  
         <div className="flex items-center space-x-2">
           <button
+            type="button"
             aria-label="Previous"
-            className="mac-button px-3 py-1 rounded-lg"
-            onClick={() => setPage((p) => (p - 1 + pages.length) % pages.length)}
+            className="mac-button px-3 py-1 rounded-lg transition-opacity hover:opacity-80"
+            onClick={prevPage}
           >
             ‹
           </button>
           <button
+            type="button"
             aria-label="Next"
-            className="mac-button px-3 py-1 rounded-lg"
-            onClick={() => setPage((p) => (p + 1) % pages.length)}
+            className="mac-button px-3 py-1 rounded-lg transition-opacity hover:opacity-80"
+            onClick={nextPage}
           >
             ›
           </button>
@@ -122,13 +145,13 @@ export default function SkillsCarousel({
             {pages.map((chunk, i) => (
               <div key={i} className="inline-block align-top w-full">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-                  {chunk.map((s, idx) => (
+                  {chunk.map((skill, idx) => (
                     <div
-                      key={`${s.name}-${idx}`}
-                      className="tech-icon mac-card p-4 md:p-6 rounded-xl flex flex-col items-center justify-center"
+                      key={`${skill.name}-${idx}`}
+                      className="tech-icon mac-card p-4 md:p-6 rounded-xl flex flex-col items-center justify-center transition-transform hover:scale-105"
                     >
-                      <i className={`${s.icon} text-3xl md:text-4xl mb-2 ${s.color ?? ""}`}></i>
-                      <span className="text-sm md:text-base">{s.name}</span>
+                      <i className={`${skill.icon} text-3xl md:text-4xl mb-2 ${skill.color ?? ""}`}></i>
+                      <span className="text-sm md:text-base text-center">{skill.name}</span>
                     </div>
                   ))}
                 </div>
@@ -138,18 +161,21 @@ export default function SkillsCarousel({
         </div>
 
         {/* dots */}
-        <div className="flex justify-center mt-4 space-x-2">
-          {pages.map((_, i) => (
-            <button
-              key={i}
-              aria-label={`Go to slide ${i + 1}`}
-              className={`h-2 w-2 rounded-full transition ${
-                i === page ? "bg-[var(--accent)] scale-110" : "bg-[var(--border)]"
-              }`}
-              onClick={() => setPage(i)}
-            />
-          ))}
-        </div>
+        {pages.length > 1 && (
+          <div className="flex justify-center mt-4 space-x-2">
+            {pages.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Go to slide ${i + 1}`}
+                className={`h-2 w-2 rounded-full transition-all ${
+                  i === page ? "bg-[var(--accent)] scale-110" : "bg-[var(--border)]"
+                }`}
+                onClick={() => goToPage(i)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

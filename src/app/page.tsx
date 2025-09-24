@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import ProjectsSection from "./components/ProjectsSection";
 import SkillsCarousel from "./components/SkillsCarousel";
-
+import NotesSection from "./components/NotesSection";
 const TOP_SKILLS = [
   { name: "React", icon: "fab fa-react", color: "text-blue-400" },
   { name: "JavaScript", icon: "fab fa-js", color: "text-yellow-400" },
@@ -95,6 +95,7 @@ export default function Home() {
 
        {/* ==== PROJECTS (component with GSAP) ==== */}
         <ProjectsSection />
+            <NotesSection />
       </div>
     </main>
   );

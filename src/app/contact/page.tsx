@@ -1,15 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import type React from "react";
 
 type Status = { type: "idle" | "loading" | "success" | "error"; message?: string };
+type FormState = { name: string; email: string; subject: string; message: string; botField: string };
 
 export default function ContactPage() {
   const [status, setStatus] = useState<Status>({ type: "idle" });
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "", botField: "" });
+  const [form, setForm] = useState<FormState>({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+    botField: "",
+  });
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, value } = e.currentTarget; // safer than e.target for typing
+    setForm((f) => ({ ...f, [name]: value }));
   };
 
   const validate = () => {
@@ -21,15 +30,17 @@ export default function ContactPage() {
     return null;
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const err = validate();
-    if (err) return setStatus({ type: "error", message: err });
+    if (err) {
+      setStatus({ type: "error", message: err });
+      return;
+    }
 
     setStatus({ type: "loading" });
 
     try {
-      // --- Option A: API route (recommended) ---
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -41,13 +52,14 @@ export default function ContactPage() {
       setStatus({ type: "success", message: "Thanks! I’ll get back to you shortly." });
       setForm({ name: "", email: "", subject: "", message: "", botField: "" });
 
-      // --- Option B: mailto fallback (no backend) ---
+      // Mailto fallback if you prefer:
       // window.location.href = `mailto:you@example.com?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(`From: ${form.name} <${form.email}>\n\n${form.message}`)}`;
-
-    } catch (error: any) {
-      setStatus({ type: "error", message: error?.message || "Something went wrong. Please try again." });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      setStatus({ type: "error", message });
     } finally {
-      setTimeout(() => setStatus({ type: "idle" }), 4000);
+      // ensure browser number return type (avoids NodeJS.Timeout type issue)
+      window.setTimeout(() => setStatus({ type: "idle" }), 4000);
     }
   };
 
@@ -93,7 +105,12 @@ export default function ContactPage() {
             <i className="fab fa-linkedin text-2xl mt-1 text-[var(--accent)]" />
             <div>
               <div className="font-semibold">LinkedIn</div>
-              <a href="https://www.linkedin.com/in/your-handle" className="text-[var(--text-secondary)] hover:underline" target="_blank">
+              <a
+                href="https://www.linkedin.com/in/your-handle"
+                className="text-[var(--text-secondary)] hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 /in/your-handle
               </a>
             </div>
@@ -102,7 +119,12 @@ export default function ContactPage() {
             <i className="fab fa-github text-2xl mt-1 text-[var(--accent)]" />
             <div>
               <div className="font-semibold">GitHub</div>
-              <a href="https://github.com/your-handle" className="text-[var(--text-secondary)] hover:underline" target="_blank">
+              <a
+                href="https://github.com/your-handle"
+                className="text-[var(--text-secondary)] hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 @your-handle
               </a>
             </div>

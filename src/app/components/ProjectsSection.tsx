@@ -2,7 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ProjectCard from "./ProjectCard";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
@@ -45,7 +48,7 @@ export default function ProjectsSection() {
           trigger: containerRef.current,
           start: "top 80%",
         },
-      } as any);
+      });
     }, containerRef);
 
     return () => ctx.revert();

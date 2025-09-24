@@ -61,14 +61,7 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    // good defaults; relax/adjust per page if needed
-    googleBot: {
-      index: true,
-      follow: true,
-      maxSnippet: -1,
-      maxImagePreview: "large",
-      maxVideoPreview: -1,
-    },
+  
   },
   icons: [
     { rel: "icon", url: "/favicon.ico" },
@@ -106,7 +99,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={inter.className}>
-        <Constellation />
+  
         <Navbar />
         {children}
         <Dock />

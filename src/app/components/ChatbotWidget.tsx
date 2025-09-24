@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 
 type Msg = { id: string; role: "user" | "bot"; text: string; ts: number };
 const LS_KEY = "tanvi-chat";
@@ -16,6 +17,13 @@ function uid() {
   return Math.random().toString(36).slice(2);
 }
 
+// ✅ Properly augment the built-in event map instead of redefining addEventListener
+declare global {
+  interface WindowEventMap {
+    "open-chatbot": CustomEvent;
+  }
+}
+
 export default function ChatbotWidget() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -28,25 +36,31 @@ export default function ChatbotWidget() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(LS_KEY);
-      if (saved) setMsgs(JSON.parse(saved));
-      else
+      if (saved) {
+        setMsgs(JSON.parse(saved) as Msg[]);
+      } else {
         setMsgs([
           {
             id: uid(),
             role: "bot",
             text:
-              "Hi! I’m Tanvi’s assistant 👋\nAsk about projects, skills, availability, or say ‘contact’.",
+              "Hi! I'm Tanvi's assistant 👋\nAsk about projects, skills, availability, or say 'contact'.",
             ts: Date.now(),
           },
         ]);
-    } catch {}
+      }
+    } catch (error) {
+      console.error("Failed to load chat history:", error);
+    }
   }, []);
 
   // persist
   useEffect(() => {
     try {
       localStorage.setItem(LS_KEY, JSON.stringify(msgs));
-    } catch {}
+    } catch (error) {
+      console.error("Failed to save chat history:", error);
+    }
   }, [msgs]);
 
   // auto-scroll
@@ -57,8 +71,8 @@ export default function ChatbotWidget() {
   // external opener (from FloatingActions button)
   useEffect(() => {
     const handler = () => setOpen(true);
-    window.addEventListener("open-chatbot", handler as any);
-    return () => window.removeEventListener("open-chatbot", handler as any);
+    window.addEventListener("open-chatbot", handler as EventListener);
+    return () => window.removeEventListener("open-chatbot", handler as EventListener);
   }, []);
 
   const handleSend = async (textRaw?: string) => {
@@ -92,7 +106,7 @@ export default function ChatbotWidget() {
 
     // availability
     if (/(available|availability|free|capacity)/.test(s)) {
-      return "Tanvi is currently **taking new projects this month**. Share timeline/scope on /contact and she’ll reply within 24h.";
+      return "Tanvi is currently **taking new projects this month**. Share timeline/scope on /contact and she'll reply within 24h.";
     }
 
     // skills
@@ -122,45 +136,44 @@ export default function ChatbotWidget() {
     }
 
     // default
-    return "Got it! I can help with **projects**, **skills**, **availability**, or **contact**. Try: “Show featured projects” or “How can I contact you?”.";
+    return 'Got it! I can help with **projects**, **skills**, **availability**, or **contact**. Try: "Show featured projects" or "How can I contact you?".';
   };
 
   // message renderer (with minimal markdown for **bold** + links)
- // replace your renderText with this:
-const renderText = (t: string) => {
-  // 1) split into link vs non-link chunks first
-  const linkTokens = t.split(/(\/[a-zA-Z0-9\-_/]+)/g);
+  const renderText = (t: string) => {
+    // 1) split into link vs non-link chunks first
+    const linkTokens = t.split(/(\/[a-zA-Z0-9\-_/]+)/g);
 
-  const out: React.ReactNode[] = [];
-  linkTokens.forEach((tok, i) => {
-    // if it's a route-like token, render as <a>
-    if (/^\/[a-zA-Z0-9\-_/]+$/.test(tok)) {
-      out.push(
-        <a key={`link-${i}`} href={tok} className="text-[var(--accent)] hover:opacity-80">
-          {tok}
-        </a>
-      );
-      return;
-    }
-
-    // 2) within plain text chunks, support **bold**
-    const boldTokens = tok.split(/(\*\*[^*]+\*\*)/g);
-    boldTokens.forEach((seg, j) => {
-      if (!seg) return;
-      if (/^\*\*.+\*\*$/.test(seg)) {
-        out.push(<strong key={`b-${i}-${j}`}>{seg.slice(2, -2)}</strong>);
-      } else {
-        out.push(<span key={`t-${i}-${j}`}>{seg}</span>);
+    const out: ReactNode[] = [];
+    linkTokens.forEach((tok, i) => {
+      // if it's a route-like token, render as <a>
+      if (/^\/[a-zA-Z0-9\-_/]+$/.test(tok)) {
+        out.push(
+          <a key={`link-${i}`} href={tok} className="text-[var(--accent)] hover:opacity-80">
+            {tok}
+          </a>
+        );
+        return;
       }
-    });
-  });
 
-  return out;
-};
+      // 2) within plain text chunks, support **bold**
+      const boldTokens = tok.split(/(\*\*[^*]+\*\*)/g);
+      boldTokens.forEach((seg, j) => {
+        if (!seg) return;
+        if (/^\*\*.+\*\*$/.test(seg)) {
+          out.push(<strong key={`b-${i}-${j}`}>{seg.slice(2, -2)}</strong>);
+        } else {
+          out.push(<span key={`t-${i}-${j}`}>{seg}</span>);
+        }
+      });
+    });
+
+    return out;
+  };
 
   return (
     <>
-      {/* launcher for small screens if you don't use FloatingActions */}
+      {/* launcher for small screens if you don&apos;t use FloatingActions */}
       <button
         onClick={() => setOpen((o) => !o)}
         className="fixed bottom-6 right-6 z-40 md:hidden flex items-center justify-center w-14 h-14 rounded-full bg-[var(--accent)] shadow-xl"
@@ -176,7 +189,7 @@ const renderText = (t: string) => {
           <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-primary)] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <i className="fas fa-robot text-[var(--accent)]" />
-              <div className="font-semibold">Tanvi’s Assistant</div>
+              <div className="font-semibold">Tanvi&apos;s Assistant</div>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -195,7 +208,7 @@ const renderText = (t: string) => {
                 className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`px-3 py-2 rounded-lg text-sm leading-relaxed ${
+                  className={`px-3 py-2 rounded-lg text-sm leading-relaxed max-w-[80%] ${
                     m.role === "user"
                       ? "bg-[var(--accent)]/90 text-[var(--bg-primary)]"
                       : "bg-[var(--border)]/40 text-[var(--text-primary)]"
@@ -226,7 +239,7 @@ const renderText = (t: string) => {
               <button
                 key={s}
                 onClick={() => handleSend(s)}
-                className="text-xs px-2 py-1 rounded border border-[var(--border)] hover:border-[var(--accent)]/60"
+                className="text-xs px-2 py-1 rounded border border-[var(--border)] hover:border-[var(--accent)]/60 transition-colors"
               >
                 {s}
               </button>
@@ -246,11 +259,13 @@ const renderText = (t: string) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message…"
-              className="flex-1 px-3 py-2 rounded-lg border bg-transparent border-[var(--border)] focus:outline-none focus:border-[var(--accent)]"
+              className="flex-1 px-3 py-2 rounded-lg border bg-transparent border-[var(--border)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+              disabled={typing}
             />
             <button
               type="submit"
-              className="mac-button px-4 py-2 rounded-lg font-medium"
+              disabled={typing || !input.trim()}
+              className="mac-button px-4 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
               aria-label="Send"
             >
               <i className="fas fa-paper-plane" />

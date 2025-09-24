@@ -11,7 +11,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [countryOpen, setCountryOpen] = useState(false);
   const [country, setCountry] = useState("🇺🇸 USA");
-  const [time, setTime] = useState("9:41");
+  const [time, setTime] = useState(""); // Added missing time state
 
   // hydrate theme
   useEffect(() => {
@@ -56,7 +56,6 @@ export default function Navbar() {
 
   return (
     <>
-   
       {/* Top Nav */}
       <nav className="fixed w-full py-4 px-6 z-50 backdrop-blur-lg bg-opacity-20" style={{ top: 0 }}>
         <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -70,18 +69,32 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center space-x-3">
+            {/* Time Display (if needed) */}
+            {time && (
+              <div className="text-sm font-mono hidden lg:block">
+                {time}
+              </div>
+            )}
+
             {/* Country Selector */}
             <div className="country-selector relative">
-              <button className="country-dropdown" onClick={() => setCountryOpen(v => !v)}>
+              <button 
+                className="country-dropdown" 
+                onClick={() => setCountryOpen(v => !v)}
+                aria-expanded={countryOpen}
+                aria-haspopup="listbox"
+              >
                 <span>{country}</span>
                 <i className="fas fa-chevron-down text-xs" />
               </button>
 
-              <div className={`country-options ${countryOpen ? "show" : ""}`}>
+              <div className={`country-options ${countryOpen ? "show" : ""}`} role="listbox">
                 {["🇺🇸 USA","🇬🇧 UK","🇮🇳 India","🇦🇺 Australia","🇩🇪 Germany"].map(c => (
                   <div
                     key={c}
                     className="country-option"
+                    role="option"
+                    aria-selected={country === c}
                     onClick={() => { setCountry(c); setCountryOpen(false); }}
                   >
                     <span>{c.split(" ")[0]}</span>
@@ -97,7 +110,12 @@ export default function Navbar() {
             </div>
 
             {/* Mobile menu button */}
-            <button className="md:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu">
+            <button 
+              className="md:hidden" 
+              onClick={() => setMobileOpen(true)} 
+              aria-label="Open menu"
+              aria-expanded={mobileOpen}
+            >
               <i className="fas fa-bars text-xl" />
             </button>
           </div>
@@ -105,10 +123,32 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile Menu */}
-      <div className={`mobile-menu-overlay ${mobileOpen ? "active" : ""}`} onClick={() => setMobileOpen(false)} />
-      <div className={`mobile-menu ${mobileOpen ? "active" : ""}`}>
+      <div 
+        className={`mobile-menu-overlay ${mobileOpen ? "active" : ""}`} 
+        onClick={() => setMobileOpen(false)}
+        aria-hidden={!mobileOpen}
+      />
+      <div 
+        className={`mobile-menu ${mobileOpen ? "active" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
+      >
+        <button
+          className="mobile-menu-close"
+          onClick={() => setMobileOpen(false)}
+          aria-label="Close menu"
+        >
+          <i className="fas fa-times" />
+        </button>
+
         {["about","projects","skills","contact"].map(p => (
-          <Link key={p} href={`/${p}`} className="mobile-menu-item" onClick={() => setMobileOpen(false)}>
+          <Link 
+            key={p} 
+            href={`/${p}`} 
+            className="mobile-menu-item" 
+            onClick={() => setMobileOpen(false)}
+          >
             {p.charAt(0).toUpperCase() + p.slice(1)}
           </Link>
         ))}
