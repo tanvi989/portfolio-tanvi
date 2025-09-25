@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import ProjectCard from "@/app/components/ProjectCard";
-
+import Link from "next/link";
 import NoteCard, { type NoteCardProps } from "@/app/components/NoteCard"; // <- update path
 
 // ---------- Types ----------
@@ -212,14 +212,14 @@ export default function SkillPage({ params }: PageProps) {
             <h1 className="text-3xl md:text-4xl font-bold">{tech.name}</h1>
             <p className="text-[var(--muted-foreground,#6b7280)] mt-1">{tech.short}</p>
           </div>
-          <a
+          <Link
             href={tech.homepage}
             target="_blank"
             rel="noopener noreferrer"
             className="mac-button px-4 py-2 rounded-lg"
           >
             Official Docs
-          </a>
+          </Link>
         </div>
       </header>
 
@@ -366,17 +366,17 @@ export default function SkillPage({ params }: PageProps) {
 
       {/* Footer */}
       <footer className="flex items-center gap-3 mt-10">
-        <a
+        <Link
           href={tech.homepage}
           target="_blank"
           rel="noopener noreferrer"
           className="mac-button px-4 py-2 rounded-lg"
         >
           Official Docs
-        </a>
-        <a href="/" className="underline opacity-80 hover:opacity-100">
+        </Link>
+        <Link href="/" className="underline opacity-80 hover:opacity-100">
           Back to home
-        </a>
+        </Link>
       </footer>
     </main>
   );

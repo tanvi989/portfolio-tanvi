@@ -99,12 +99,12 @@ export default function SkillsPage() {
                 most productive with — and the broader stack I reach for in real projects.
               </p>
             </div>
-            <a
+            <Link
               href="/projects"
               className="mac-button px-6 py-3 rounded-lg font-medium whitespace-nowrap"
             >
               Explore Projects
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -187,15 +187,15 @@ export default function SkillsPage() {
               </p>
             </div>
             <div className="flex gap-3">
-              <a href="/projects" className="mac-button px-5 py-3 rounded-lg font-medium">
+              <Link href="/projects" className="mac-button px-5 py-3 rounded-lg font-medium">
                 View Projects
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/contact"
                 className="border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] px-5 py-3 rounded-lg font-medium transition"
               >
                 Contact Me
-              </a>
+              </Link>
             </div>
           </div>
         </section>

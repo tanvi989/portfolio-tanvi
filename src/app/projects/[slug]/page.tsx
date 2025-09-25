@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import NoteCard, { type NoteCardProps } from "@/app/components/NoteCard"; // <- update path
 // <- update path
+import Link from "next/link";
 
 // ========== Types ==========
 type Link = { label: string; href: string; external?: boolean };
@@ -311,7 +312,7 @@ export default function ProjectPage({ params }: PageProps) {
       {p.links?.length ? (
         <section className="flex flex-wrap gap-3 mt-6">
           {p.links.map((l, i) => (
-            <a
+            <Link
               key={i}
               href={l.href}
               target={l.external ? "_blank" : undefined}
@@ -319,16 +320,16 @@ export default function ProjectPage({ params }: PageProps) {
               className="mac-button px-4 py-2 rounded-lg"
             >
               {l.label}
-            </a>
+            </Link>
           ))}
         </section>
       ) : null}
 
       {/* Footer */}
       <div className="mt-10">
-        <a href="/" className="underline opacity-80 hover:opacity-100">
+        <Link href="/" className="underline opacity-80 hover:opacity-100">
           Back to home
-        </a>
+        </Link>
       </div>
     </main>
   );

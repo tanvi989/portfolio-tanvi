@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import ProjectsSection from "./components/ProjectsSection";
 import SkillsCarousel from "./components/SkillsCarousel";
 import NotesSection from "./components/NotesSection";
+import Link from "next/link";
 const TOP_SKILLS = [
    { name: "Machine Learning", icon: "fas fa-brain", color: "text-rose-400" }, // New
   { name: "Blockchain", icon: "fab fa-ethereum", color: "text-indigo-400" }, // N
@@ -77,15 +78,15 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center md:justify-start">
-                <a href="/projects" className="mac-button px-6 py-3 rounded-lg font-medium w-full md:w-auto text-center">
+                <Link href="/projects" className="mac-button px-6 py-3 rounded-lg font-medium w-full md:w-auto text-center">
                   View Projects
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/contact"
                   className="border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] px-6 py-3 rounded-lg font-medium transition w-full md:w-auto text-center"
                 >
                   Contact Me
-                </a>
+                </Link>
               </div>
             </div>
           </div>
