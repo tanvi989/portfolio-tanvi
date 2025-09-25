@@ -1,107 +1,159 @@
 "use client";
-
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
 
 type Project = {
   title: string;
   desc: string;
-  gradient: string;
   tags: string[];
   href: string;
+  images: string[]; // 4–5 images per project
   featured?: boolean;
   date?: string; // YYYY-MM-DD for sorting
 };
 
+// Tip: replace these image paths with your actual assets.
 const ALL_PROJECTS: Project[] = [
   {
     title: "E-Commerce Platform",
     desc: "A full-featured online shopping experience with cart, checkout, and order management.",
-    gradient: "from-purple-600 to-blue-500",
     tags: ["React", "Node.js", "MongoDB", "Stripe"],
     href: "/projects/ecommerce",
     featured: true,
     date: "2025-04-10",
+    images: [
+      "/images/ecommerce/1.jpg",
+      "/images/ecommerce/2.jpg",
+      "/images/ecommerce/3.jpg",
+      "/images/ecommerce/4.jpg",
+      "/images/ecommerce/5.jpg",
+    ],
   },
   {
     title: "Task Management App",
     desc: "Kanban-style boards, real-time collaboration, and role-based access control.",
-    gradient: "from-blue-600 to-teal-500",
     tags: ["TypeScript", "React", "Firebase"],
     href: "/projects/task-manager",
     featured: true,
     date: "2024-11-20",
+    images: [
+      "/images/task-manager/1.jpg",
+      "/images/task-manager/2.jpg",
+      "/images/task-manager/3.jpg",
+      "/images/task-manager/4.jpg",
+    ],
   },
   {
     title: "Weather Dashboard",
     desc: "Real-time weather with radar maps, alerts, and location-based forecasts.",
-    gradient: "from-indigo-600 to-purple-500",
     tags: ["JavaScript", "API", "CSS"],
     href: "/projects/weather",
     date: "2024-07-02",
+    images: [
+      "/images/weather/1.jpg",
+      "/images/weather/2.jpg",
+      "/images/weather/3.jpg",
+      "/images/weather/4.jpg",
+    ],
   },
   {
     title: "SaaS Analytics",
     desc: "Multi-tenant analytics with ingestion pipeline, dashboards, and RBAC.",
-    gradient: "from-rose-600 to-orange-500",
     tags: ["Next.js", "PostgreSQL", "Prisma", "Docker"],
     href: "/projects/saas-analytics",
     featured: true,
     date: "2025-02-14",
+    images: [
+      "/images/saas-analytics/1.jpg",
+      "/images/saas-analytics/2.jpg",
+      "/images/saas-analytics/3.jpg",
+      "/images/saas-analytics/4.jpg",
+      "/images/saas-analytics/5.jpg",
+    ],
   },
   {
     title: "Chat Support Widget",
     desc: "Embeddable customer support chat with bots, handoff, and transcripts.",
-    gradient: "from-emerald-600 to-cyan-500",
     tags: ["React", "WebSocket", "Node.js", "Redis"],
     href: "/projects/chat-widget",
     date: "2024-09-18",
+    images: [
+      "/images/chat-widget/1.jpg",
+      "/images/chat-widget/2.jpg",
+      "/images/chat-widget/3.jpg",
+      "/images/chat-widget/4.jpg",
+    ],
   },
   {
     title: "IoT Fleet Monitor",
     desc: "Telemetry ingestion, device health, and geofencing alerts at scale.",
-    gradient: "from-sky-600 to-indigo-500",
     tags: ["AWS", "Lambda", "DynamoDB", "TypeScript"],
     href: "/projects/iot-fleet",
     date: "2025-03-01",
+    images: [
+      "/images/iot-fleet/1.jpg",
+      "/images/iot-fleet/2.jpg",
+      "/images/iot-fleet/3.jpg",
+      "/images/iot-fleet/4.jpg",
+    ],
   },
   {
     title: "Portfolio v3",
     desc: "This site: performant animations, GSAP sprinkles, and accessible UI.",
-    gradient: "from-fuchsia-600 to-pink-500",
     tags: ["Next.js", "Tailwind", "GSAP"],
     href: "/projects/portfolio-v3",
     date: "2025-05-25",
+    images: [
+      "/images/portfolio-v3/1.jpg",
+      "/images/portfolio-v3/2.jpg",
+      "/images/portfolio-v3/3.jpg",
+      "/images/portfolio-v3/4.jpg",
+      "/images/portfolio-v3/5.jpg",
+    ],
   },
   {
     title: "Food Delivery Clone",
     desc: "Search, cart, payments, delivery tracking with live order status.",
-    gradient: "from-amber-600 to-red-500",
     tags: ["React Native", "Expo", "Stripe", "Firebase"],
     href: "/projects/food-delivery",
     date: "2024-12-05",
+    images: [
+      "/images/food-delivery/1.jpg",
+      "/images/food-delivery/2.jpg",
+      "/images/food-delivery/3.jpg",
+      "/images/food-delivery/4.jpg",
+    ],
   },
   {
     title: "Blog Engine",
     desc: "MDX content, image optimization, and instant search.",
-    gradient: "from-teal-600 to-emerald-500",
     tags: ["Next.js", "MDX", "Algolia"],
     href: "/projects/blog-engine",
     date: "2024-08-10",
+    images: [
+      "/images/blog-engine/1.jpg",
+      "/images/blog-engine/2.jpg",
+      "/images/blog-engine/3.jpg",
+      "/images/blog-engine/4.jpg",
+    ],
   },
   {
     title: "Video Processing Pipeline",
     desc: "Serverless video ingest, thumbnailing, and HLS packaging.",
-    gradient: "from-slate-600 to-zinc-500",
     tags: ["AWS", "S3", "Lambda", "FFmpeg"],
     href: "/projects/video-pipeline",
     date: "2025-01-07",
+    images: [
+      "/images/video-pipeline/1.jpg",
+      "/images/video-pipeline/2.jpg",
+      "/images/video-pipeline/3.jpg",
+      "/images/video-pipeline/4.jpg",
+    ],
   },
 ];
 
-const ALL_TAGS = Array.from(
-  new Set(ALL_PROJECTS.flatMap((p) => p.tags))
-).sort();
+const ALL_TAGS = Array.from(new Set(ALL_PROJECTS.flatMap((p) => p.tags))).sort();
 
 type Tab = "Featured" | "All";
 type SortBy = "Newest" | "Oldest" | "A–Z" | "Z–A";
@@ -185,9 +237,9 @@ export default function ProjectsPage() {
                 performance, DX, and delightful UX.
               </p>
             </div>
-            <a href="/contact" className="mac-button px-6 py-3 rounded-lg font-medium whitespace-nowrap">
+            <Link href="/contact" className="mac-button px-6 py-3 rounded-lg font-medium whitespace-nowrap">
               Start a project
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -312,15 +364,15 @@ export default function ProjectsPage() {
               </p>
             </div>
             <div className="flex gap-3">
-              <a href="/contact" className="mac-button px-5 py-3 rounded-lg font-medium">
+              <Link href="/contact" className="mac-button px-5 py-3 rounded-lg font-medium">
                 Get in touch
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/skills"
                 className="border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] px-5 py-3 rounded-lg font-medium transition"
               >
                 View skills
-              </a>
+              </Link>
             </div>
           </div>
         </section>

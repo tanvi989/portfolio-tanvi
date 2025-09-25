@@ -1,5 +1,6 @@
 "use client";
 import Image from 'next/image'
+import Link from 'next/link';
 export default function AboutPage() {
   return (
     <main className="pt-24 pb-16 px-6">
@@ -18,22 +19,22 @@ export default function AboutPage() {
               </p>
 
               <div className="flex flex-wrap gap-3 mt-6">
-                <a href="/projects" className="mac-button px-5 py-3 rounded-lg font-medium">
+                <Link href="/projects" className="mac-button px-5 py-3 rounded-lg font-medium">
                   View Projects
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/Tanvi_Paradkar_CV.pdf"
                   className="border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] px-5 py-3 rounded-lg font-medium transition"
                   download
                 >
                   Download CV
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/contact"
                   className="px-5 py-3 rounded-lg font-medium border border-[var(--border)] hover:border-[var(--accent)]/60"
                 >
                   Contact Me
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -67,15 +68,15 @@ export default function AboutPage() {
                 </div>
 
                 <div className="flex items-center gap-4 mt-5">
-                  <a href="mailto:you@example.com" className="hover:opacity-80" aria-label="Email">
+                  <Link href="mailto:you@example.com" className="hover:opacity-80" aria-label="Email">
                     <i className="fas fa-envelope text-xl text-[var(--accent)]" />
-                  </a>
-                  <a href="https://www.linkedin.com/in/your-handle" target="_blank" className="hover:opacity-80" aria-label="LinkedIn">
+                  </Link>
+                  <Link href="https://www.linkedin.com/in/your-handle" target="_blank" className="hover:opacity-80" aria-label="LinkedIn">
                     <i className="fab fa-linkedin text-xl text-[var(--accent)]" />
-                  </a>
-                  <a href="https://github.com/your-handle" target="_blank" className="hover:opacity-80" aria-label="GitHub">
+                  </Link>
+                  <Link href="https://github.com/your-handle" target="_blank" className="hover:opacity-80" aria-label="GitHub">
                     <i className="fab fa-github text-xl text-[var(--accent)]" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -189,9 +190,9 @@ export default function AboutPage() {
             <p className="text-sm text-[var(--text-secondary)]">
               Building with Next.js App Router, experimenting with server actions, and polishing a small design system.
             </p>
-            <a href="/projects" className="inline-flex items-center gap-2 text-[var(--accent)] mt-3">
+            <Link href="/projects" className="inline-flex items-center gap-2 text-[var(--accent)] mt-3">
               See what I’m shipping <i className="fas fa-arrow-right" />
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -203,15 +204,15 @@ export default function AboutPage() {
               <p className="text-[var(--text-secondary)]">I’m open to freelance and full-time opportunities.</p>
             </div>
             <div className="flex gap-3">
-              <a href="/contact" className="mac-button px-5 py-3 rounded-lg font-medium">
+              <Link href="/contact" className="mac-button px-5 py-3 rounded-lg font-medium">
                 Contact Me
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/projects"
                 className="border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] px-5 py-3 rounded-lg font-medium transition"
               >
                 View Projects
-              </a>
+              </Link>
             </div>
           </div>
         </section>

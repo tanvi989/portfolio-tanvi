@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import ProjectsSection from "./components/ProjectsSection";
 import SkillsCarousel from "./components/SkillsCarousel";
 import NotesSection from "./components/NotesSection";
+import PartnersSlider from "./components/PartnersSlider";
 import Link from "next/link";
 const TOP_SKILLS = [
    { name: "Machine Learning", icon: "fas fa-brain", color: "text-rose-400" }, // New
@@ -101,6 +102,7 @@ export default function Home() {
        {/* ==== PROJECTS (component with GSAP) ==== */}
         <ProjectsSection />
             <NotesSection />
+            <PartnersSlider />
       </div>
     </main>
   );

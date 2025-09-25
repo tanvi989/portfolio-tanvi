@@ -1,9 +1,11 @@
+
+
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import ProjectCard from "@/app/components/ProjectCard";
 import Link from "next/link";
-import NoteCard, { type NoteCardProps } from "@/app/components/NoteCard"; // <- update path
+import NoteCard, { type NoteCardProps } from "@/app/components/NoteCard"; // path ok
 
 // ---------- Types ----------
 type TechStats = {
@@ -20,9 +22,9 @@ type ExperienceItem = { title: string; period: string; bullets: string[] };
 type PortfolioProject = {
   title: string;
   desc: string;
-  gradient: string;
   tags: string[];
   href: string;
+  images: string[]; // <-- swapped from `gradient` to images
 };
 
 type TechInfo = {
@@ -37,7 +39,7 @@ type TechInfo = {
   highlights?: string[];
   experience?: ExperienceItem[];
   projects?: PortfolioProject[];
-  notes?: NoteCardProps[]; // <- use your NoteCard props directly
+  notes?: NoteCardProps[];
   install?: string;
   example?: { title: string; code: string; language?: "tsx" | "ts" | "js" | "bash" };
 };
@@ -98,23 +100,39 @@ const TECHS: Record<string, TechInfo> = {
       {
         title: "Analytics Dashboard (Next.js + RSC)",
         desc: "Real-time metrics with server components, streamed charts, caching, optimistic UI.",
-        gradient: "from-indigo-500 via-sky-500 to-emerald-500",
         tags: ["Next.js", "RSC", "Charts", "Edge"],
-        href: "https://example.com/analytics"
+        href: "https://example.com/analytics",
+        images: [
+          "/images/projects/analytics/1.jpg",
+          "/images/projects/analytics/2.jpg",
+          "/images/projects/analytics/3.jpg",
+          "/images/projects/analytics/4.jpg",
+          "/images/projects/analytics/5.jpg"
+        ]
       },
       {
         title: "E-commerce PDP Revamp",
         desc: "Suspense data fetching, image optimization, a11y fixes to AA, +18% conversion.",
-        gradient: "from-fuchsia-500 via-pink-500 to-rose-500",
         tags: ["React", "Suspense", "A11y"],
-        href: "https://example.com/pdp-revamp"
+        href: "https://example.com/pdp-revamp",
+        images: [
+          "/images/projects/pdp/1.jpg",
+          "/images/projects/pdp/2.jpg",
+          "/images/projects/pdp/3.jpg",
+          "/images/projects/pdp/4.jpg"
+        ]
       },
       {
         title: "Component Library & Tokens",
         desc: "Design-system primitives, Storybook docs, dark mode, motion guidelines.",
-        gradient: "from-amber-500 via-orange-500 to-red-500",
         tags: ["Storybook", "Tailwind", "Design Tokens"],
-        href: "https://example.com/library"
+        href: "https://example.com/library",
+        images: [
+          "/images/projects/library/1.jpg",
+          "/images/projects/library/2.jpg",
+          "/images/projects/library/3.jpg",
+          "/images/projects/library/4.jpg"
+        ]
       }
     ],
     // ---- Notes (NoteCard) ----
@@ -125,8 +143,7 @@ const TECHS: Record<string, TechInfo> = {
         gradient: "from-blue-600 via-cyan-500 to-teal-500",
         tags: ["Hooks", "Rules of Hooks", "Patterns"],
         pdfUrl:
-          "https://www.sathyabama.ac.in/sites/default/files/course-material/2020-10/UNIT4.pdf",
-      
+          "https://www.sathyabama.ac.in/sites/default/files/course-material/2020-10/UNIT4.pdf"
       },
       {
         title: "Performance & Memoization",
@@ -134,8 +151,7 @@ const TECHS: Record<string, TechInfo> = {
         gradient: "from-emerald-600 via-lime-500 to-yellow-500",
         tags: ["Performance", "Memo", "Renders"],
         pdfUrl:
-          "https://www.sathyabama.ac.in/sites/default/files/course-material/2020-10/UNIT4.pdf",
-      
+          "https://www.sathyabama.ac.in/sites/default/files/course-material/2020-10/UNIT4.pdf"
       },
       {
         title: "RSC + App Router Deep Dive",
@@ -143,8 +159,7 @@ const TECHS: Record<string, TechInfo> = {
         gradient: "from-sky-600 via-indigo-500 to-purple-600",
         tags: ["RSC", "Next.js", "Streaming"],
         pdfUrl:
-          "https://www.sathyabama.ac.in/sites/default/files/course-material/2020-10/UNIT4.pdf",
-    
+          "https://www.sathyabama.ac.in/sites/default/files/course-material/2020-10/UNIT4.pdf"
       }
     ],
     install: "npm install react react-dom",
@@ -204,7 +219,7 @@ export default function SkillPage({ params }: PageProps) {
   const s = tech.stats;
 
   return (
-   <main className="max-w-5xl mx-auto px-4 py-10 mt-10"> 
+    <main className="max-w-5xl mx-auto px-4 py-10 mt-10">
       {/* Header */}
       <header className="mb-6">
         <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -312,9 +327,9 @@ export default function SkillPage({ params }: PageProps) {
                 key={i}
                 title={p.title}
                 desc={p.desc}
-                gradient={p.gradient}
                 tags={p.tags}
                 href={p.href}
+                images={p.images} // <-- pass images to the updated ProjectCard
               />
             ))}
           </div>
@@ -325,7 +340,9 @@ export default function SkillPage({ params }: PageProps) {
       {tech.notes?.length ? (
         <section className="mb-10">
           <h2 className="font-semibold mb-3">{tech.name} Notes & Guides</h2>
-          <p className="text-sm opacity-80 mb-3">Quick references and deep dives I’ve written while building with {tech.name}.</p>
+          <p className="text-sm opacity-80 mb-3">
+            Quick references and deep dives I’ve written while building with {tech.name}.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {tech.notes.map((n, i) => (
               <NoteCard
@@ -335,7 +352,6 @@ export default function SkillPage({ params }: PageProps) {
                 gradient={n.gradient}
                 tags={n.tags}
                 pdfUrl={n.pdfUrl}
-              
               />
             ))}
           </div>
