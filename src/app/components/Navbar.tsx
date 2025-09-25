@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Popup from "./Popup";
 
-// --- your existing types & constants ---
+// --- types & constants ---
 type Theme = "black" | "white" | "blue" | "purple" | "green" | "orange" | "pink";
 const THEMES: Theme[] = ["black", "white", "blue", "purple", "green", "orange", "pink"];
 
@@ -41,10 +41,12 @@ function detectCountryKey(tz?: string): CountryKey | null {
 export default function Navbar() {
   const [theme, setTheme] = useState<Theme>("black");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [countryOpen, setCountryOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [country, setCountry] = useState<CountryKey>("USA");
   const [time, setTime] = useState("");
-  const [loginOpen, setLoginOpen] = useState(false); // NEW: popup
+  const [loginOpen, setLoginOpen] = useState(false);
 
   // hydrate + autodetect country once
   useEffect(() => {
@@ -109,41 +111,96 @@ export default function Navbar() {
     />
   );
 
+  const openMobileMenu = () => {
+    setMobileOpen(true);
+    setMobileMoreOpen(false);
+  };
+
   return (
     <>
       {/* Top Nav */}
-      <nav className="fixed w-full py-4 px-6 z-50 backdrop-blur-lg bg-opacity-20" style={{ top: 0 }}>
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-xl font-semibold">Tanvi Paradkar</Link>
+      <nav className="fixed inset-x-0 top-0 z-50 py-3 px-4 sm:px-6 backdrop-blur-lg ">
+        <div className="mx-auto max-w-7xl flex items-center justify-between">
+          {/* Left: Brand (no-wrap) */}
+          <Link href="/" className="text-base sm:text-lg font-semibold whitespace-nowrap flex-shrink-0">
+            Tanvi Paradkar
+          </Link>
 
-          <div className="hidden md:flex space-x-6">
+          {/* Middle: desktop links only */}
+          <div className="hidden md:flex items-center space-x-6 min-w-0">
             <Link href="/about" className="hover:text-[var(--accent)] transition">About me</Link>
             <Link href="/projects" className="hover:text-[var(--accent)] transition">Projects</Link>
             <Link href="/skills" className="hover:text-[var(--accent)] transition">Skills</Link>
             <Link href="/contact" className="hover:text-[var(--accent)] transition">Contact</Link>
+            <Link href="/blog" className="hover:text-[var(--accent)] transition">Blog</Link>
+
+            <div className="relative">
+              <button
+                className="hover:text-[var(--accent)] transition inline-flex items-center gap-2"
+                onClick={() => setMoreOpen(v => !v)}
+                aria-haspopup="menu"
+                aria-expanded={moreOpen}
+              >
+                More
+                <i className={`fas fa-chevron-${moreOpen ? "up" : "down"} text-xs`} />
+              </button>
+
+             <div
+  className={`absolute right-0 mt-2 min-w-[10rem] max-h-[75vh] overflow-auto rounded-lg
+              backdrop-blur-xl bg-white/60 dark:bg-neutral-900/50
+              ring-1 ring-white/15 dark:ring-black/40 shadow-xl
+              ${moreOpen ? "block" : "hidden"}`}
+  role="menu"
+>
+
+                {[
+                  { href: "/travel", label: "Travel" },
+                  { href: "/software", label: "Software" },
+                  { href: "/education", label: "Education" },
+                  { href: "/healthcare", label: "Healthcare" },
+                ].map(item => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    role="menuitem"
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-3">
-            {/* Time */}
+          {/* Right: controls (no-wrap, no wrap) */}
+          <div className="flex items-center gap-2 sm:gap-3 whitespace-nowrap flex-shrink-0">
             {time && (
-              <div className="text-sm font-mono hidden lg:block" aria-label={`Local time in ${country}`}>
+              <div className="hidden lg:block text-sm font-mono" aria-label={`Local time in ${country}`}>
                 {time}
               </div>
             )}
 
             {/* Country Selector */}
-            <div className="country-selector relative">
+            <div className="relative">
               <button
-                className="country-dropdown"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 onClick={() => setCountryOpen(v => !v)}
                 aria-expanded={countryOpen}
                 aria-haspopup="listbox"
               >
-                <span>{COUNTRY_META[country].label}</span>
+                <span className="truncate max-w-[7.5rem] sm:max-w-none">{COUNTRY_META[country].label}</span>
                 <i className="fas fa-chevron-down text-xs" />
               </button>
 
-              <div className={`country-options ${countryOpen ? "show" : ""}`} role="listbox">
+             <div
+  className={`absolute right-0 mt-2 w-40 max-h-[60vh] overflow-auto rounded-md
+              backdrop-blur-xl bg-white/60 dark:bg-neutral-900/50
+              ring-1 ring-white/15 dark:ring-black/40 shadow-xl
+              ${countryOpen ? "block" : "hidden"}`}
+  role="listbox"
+>
+
                 {COUNTRY_ORDER.map(key => {
                   const selected = country === key;
                   const { label } = COUNTRY_META[key];
@@ -151,13 +208,13 @@ export default function Navbar() {
                   return (
                     <div
                       key={key}
-                      className={`country-option ${selected ? "active" : ""}`}
+                      className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 ${selected ? "font-medium" : ""}`}
                       role="option"
                       aria-selected={selected}
                       onClick={() => { setCountry(key); setCountryOpen(false); }}
                     >
                       <span>{flag}</span>
-                      <span>{rest.join(" ")}</span>
+                      <span className="truncate">{rest.join(" ")}</span>
                     </div>
                   );
                 })}
@@ -169,19 +226,19 @@ export default function Navbar() {
               {THEMES.map(ThemeDot)}
             </div>
 
-            {/* Login icon button */}
+            {/* Login icon */}
             <button
               onClick={() => setLoginOpen(true)}
-              className="ml-1 p-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              className="p-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800"
               aria-label="Open login"
             >
-              <i className="fas fa-user-circle text-xl text-lg" />
+              <i className="fas fa-user-circle text-xl" />
             </button>
 
             {/* Mobile menu button */}
             <button
-              className="md:hidden"
-              onClick={() => setMobileOpen(true)}
+              className="md:hidden p-2"
+              onClick={openMobileMenu}
               aria-label="Open menu"
               aria-expanded={mobileOpen}
             >
@@ -191,32 +248,88 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Existing Mobile Menu & overlay (unchanged) */}
+      {/* MOBILE: Overlay */}
       <div
-        className={`mobile-menu-overlay ${mobileOpen ? "active" : ""}`}
+        className={`fixed inset-0 z-40 bg-black/40 transition-opacity ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
         onClick={() => setMobileOpen(false)}
         aria-hidden={!mobileOpen}
       />
-      <div
-        className={`mobile-menu ${mobileOpen ? "active" : ""}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation menu"
-      >
-        <button className="mobile-menu-close" onClick={() => setMobileOpen(false)} aria-label="Close menu">
-          <i className="fas fa-times" />
+
+      {/* MOBILE: Slide-over panel */}
+ <div
+  className={`fixed inset-y-0 right-0 z-50 w-[84%] max-w-sm
+              bg-white/55 dark:bg-neutral-900/40 backdrop-blur-xl
+              ring-1 ring-white/15 dark:ring-black/40 shadow-2xl
+              transform transition-transform ${mobileOpen ? "translate-x-0" : "translate-x-full"}`}
+  role="dialog"
+  aria-modal="true"
+  aria-label="Navigation menu"
+>
+  {/* Optional: subtle theme-colored wash at the top (uses --accent-rgb if you have it) */}
+  <div
+    className="pointer-events-none absolute inset-0"
+    style={{
+      background:
+        "linear-gradient(180deg, rgba(var(--accent-rgb, 99 102 241) / 0.16) 0%, rgba(var(--accent-rgb, 99 102 241) / 0.00) 30%)",
+    }}
+  />
+
+        <button
+          className="absolute top-3 right-3 p-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800"
+          onClick={() => setMobileOpen(false)}
+          aria-label="Close menu"
+        >
+          <i className="fas fa-times text-xl" />
         </button>
 
-        {["about","projects","skills","contact"].map(p => (
-          <Link key={p} href={`/${p}`} className="mobile-menu-item" onClick={() => setMobileOpen(false)}>
-            {p.charAt(0).toUpperCase() + p.slice(1)}
-          </Link>
-        ))}
+        <div className="pt-[calc(env(safe-area-inset-top,0)+56px)] pb-[calc(env(safe-area-inset-bottom,0)+16px)] px-4">
+          {["about","projects","skills","contact","blog"].map(p => (
+            <Link
+              key={p}
+              href={`/${p}`}
+              className="block py-3 text-lg"
+              onClick={() => setMobileOpen(false)}
+            >
+              {p.charAt(0).toUpperCase() + p.slice(1)}
+            </Link>
+          ))}
 
-        <div className="mt-4">
-          <h3 className="text-center mb-2">Select Theme</h3>
-          <div className="mobile-theme-selector" role="radiogroup" aria-label="Theme">
-            {THEMES.map(ThemeDot)}
+          {/* Mobile "More" */}
+          <div className="pt-2">
+            <button
+              className="w-full flex items-center justify-between py-3 text-lg"
+              onClick={() => setMobileMoreOpen(v => !v)}
+              aria-expanded={mobileMoreOpen}
+              aria-controls="mobile-more-panel"
+            >
+              <span>More</span>
+              <i className={`fas fa-chevron-${mobileMoreOpen ? "up" : "down"} text-sm`} />
+            </button>
+            <div id="mobile-more-panel" className={`${mobileMoreOpen ? "mt-1 space-y-1" : "hidden"}`}>
+              {[
+                { href: "/travel", label: "Travel" },
+                { href: "/software", label: "Software" },
+                { href: "/education", label: "Education" },
+                { href: "/healthcare", label: "Healthcare" },
+              ].map(item => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="block pl-4 pr-2 py-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Theme picker (mobile) */}
+          <div className="mt-4">
+            <h3 className="text-center mb-2">Select Theme</h3>
+            <div className="flex flex-wrap items-center justify-center gap-2" role="radiogroup" aria-label="Theme">
+              {THEMES.map(ThemeDot)}
+            </div>
           </div>
         </div>
       </div>
@@ -252,10 +365,13 @@ export default function Navbar() {
           </button>
 
           <div className="text-xs text-neutral-500 dark:text-neutral-400 pt-2">
-            By continuing, you agree to our <a href="/terms" className="underline">Terms</a> and <a href="/privacy" className="underline">Privacy Policy</a>.
+            By continuing, you agree to our <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.
           </div>
         </div>
       </Popup>
+
+      {/* spacer under fixed nav */}
+      <div className="h-[64px]" />
     </>
   );
 }

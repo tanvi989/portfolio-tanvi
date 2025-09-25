@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="mt-20 border-t border-[var(--border)] bg-[var(--bg-primary)]">
@@ -8,7 +10,7 @@ export default function Footer() {
         <div>
           <h3 className="text-xl font-semibold mb-3">Tanvi Paradkar</h3>
           <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
-            Full-stack engineer passionate about crafting delightful user experiences and scalable
+             passionate about crafting delightful user experiences and scalable
             systems. Always shipping, always learning.
           </p>
         </div>
@@ -16,18 +18,18 @@ export default function Footer() {
         {/* Quick links */}
         <div className="flex flex-col gap-2">
           <h4 className="font-semibold mb-2">Quick links</h4>
-          <a href="/about" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
+          <Link href="/about" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
             About
-          </a>
-          <a href="/projects" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
+          </Link>
+          <Link href="/projects" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
             Projects
-          </a>
-          <a href="/skills" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
+          </Link>
+          <Link href="/skills" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
             Skills
-          </a>
-          <a href="/contact" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
+          </Link>
+          <Link href="/contact" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
             Contact
-          </a>
+          </Link>
         </div>
 
         {/* Socials */}

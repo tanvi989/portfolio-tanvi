@@ -195,7 +195,7 @@ export default function SkillsPage() {
                 className="border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] px-5 py-3 rounded-lg font-medium transition"
               >
                 Contact Me
-              </Link>
+                </Link>
             </div>
           </div>
         </section>
