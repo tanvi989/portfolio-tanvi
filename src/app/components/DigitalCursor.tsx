@@ -2,17 +2,29 @@
 import { useEffect, useState } from "react";
 
 export default function RealCoffeeCursor() {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+   const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
+    // Detect mobile by touch support OR small screen
+    const mobileCheck =
+      "ontouchstart" in window || navigator.maxTouchPoints > 0 || window.innerWidth < 768;
+    setIsMobile(mobileCheck);
+
+    if (!mobileCheck) {
+      const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
+      window.addEventListener("mousemove", onMove);
+      return () => window.removeEventListener("mousemove", onMove);
+    }
   }, []);
+
+  // Don’t render at all on mobile
+  if (isMobile) return null;
 
   // tweak these to position the cup relative to the pointer
   const OFFSET_X = 20;
   const OFFSET_Y = -8;
+
 
   return (
     <div
